@@ -7,6 +7,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import reactor.core.publisher.Flux;
+import sun.misc.Unsafe;
 
 @Configuration
 @RequiredArgsConstructor
@@ -16,9 +17,13 @@ public class Initializer {
 
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
-        Flux<String> names = Flux.just("Alex", "Lexa", "Oleg", "Nikita", "Slava", "Sergay");
-        Flux<Reservation> reservationFlux = names.map(name -> new Reservation(null, name));
-        Flux<Reservation> saved = reservationFlux.flatMap(repository::save);
-        saved.subscribe(System.out::println);
+        Flux<Reservation> reservationFlux = Flux
+                .just("Alex", "Lexa", "Oleg", "Nikita", "Slava", "Sergay")
+                .map(name -> new Reservation(null, name))
+                .flatMap(repository::save);
+        repository.deleteAll()
+                .thenMany(reservationFlux)
+                .thenMany(repository.findAll())
+                .subscribe(System.out::println);
     }
 }
