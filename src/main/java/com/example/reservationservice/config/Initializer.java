@@ -12,17 +12,17 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class Initializer {
 
-    private final ReservationRepository repository;
+    private final ReservationRepository reservationRepository;
 
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
         Flux<Reservation> reservationFlux = Flux
                 .just("Alex", "Lexa", "Oleg", "Nikita", "Slava", "Sergay")
                 .map(name -> new Reservation(null, name))
-                .flatMap(repository::save);
-        repository.deleteAll()
+                .flatMap(reservationRepository::save);
+        reservationRepository.deleteAll()
                 .thenMany(reservationFlux)
-                .thenMany(repository.findAll())
+                .thenMany(reservationRepository.findAll())
                 .subscribe(System.out::println);
     }
 }
