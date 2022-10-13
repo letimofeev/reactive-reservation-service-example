@@ -20,7 +20,7 @@ public class RouterConfig {
         return locatorBuilder
                 .routes()
                 .route(routeSpec -> routeSpec
-                        .host("*.foo.ru").and().path("/proxy")
+                        .host("*").and().path("/proxy")
                         .filters(filterSpec -> filterSpec
                                 .setPath("/reservations")
                                 .addRequestHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
